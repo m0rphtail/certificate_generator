@@ -18,19 +18,18 @@ read placeholder_text
 while IFS='' read -r name || [[ -n "$name" ]]; do
     echo "Generating certificate for $name ..."
     formated_name=${name// /_}
-    echo $formated_name
+    name_for_sed=${name// /\\ }
+    formated_placeholder=${placeholder_text// /\\ }
     main_svg_text=tmp/'tmp_'$input_file'.txt'
     named_svg_text=tmp/'tmp_'$input_file'_'"$formated_name".txt
-    echo $main_svg_text
-    echo $named_svg_text
-    #cp tmp/'tmp_'$input_file'.txt' tmp/'tmp_'$input_file'_'"$name".txt
-    var_for_sed="s/\b"$placeholder_text"\b/"$formated_name"/gI"
-    echo $var_for_sed
-    #sed -i $var_for_sed tmp/'tmp_'$input_file'_'"$name".txt
-    #Inkscape --export-area-page --export-filename=certificates/$name.png tmp/'tmp_'$input_file'_'"$name".txt
+    named_svg=tmp/'tmp_'$input_file'_'"$formated_name".svg
+    cp $main_svg_text $named_svg_text
+    sed -i "s/$formated_placeholder/$name_for_sed/g" $named_svg_text
+    mv $named_svg_text $named_svg
+    inkscape --export-area-page --export-filename=certificates/$formated_name.png $named_svg
 done < names.txt
 
-#rm -rf tmp
+rm -rf tmp
 
    # cp tmp/'tmp_'$input_file'.txt' tmp/'tmp_'$input_file'_'$name.txt
 #Inkscape --export-area-page --export-filename=$output_file $input_file
